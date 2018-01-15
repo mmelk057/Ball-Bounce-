@@ -1,0 +1,168 @@
+/*
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
+ */
+
+import java.awt.*;
+import java.awt.event.*;
+import java.util.*;
+import javax.swing.Timer;
+
+/**
+ *
+ * @author Max
+ */
+public class drawingArea1 extends javax.swing.JPanel {
+
+    //initializing global speed variables, a timer, a random class, and an array list to hold the balls
+
+    int globalXSpeed = 1;
+    int globalYSpeed = 1;
+    Timer t1 = new Timer(25, new TimerListener());
+    Random r = new Random();
+    ArrayList<ballClass> x = new ArrayList();
+
+    /**
+     * Creates new form drawingArea1
+     */
+    public drawingArea1() {
+        initComponents();
+    }
+
+    public void paintComponent(Graphics g) {
+        super.paintComponent(g);   //clears the panel
+        //gets a background image and draws it on the panel
+        Image nickCage = Toolkit.getDefaultToolkit().getImage("nick.jpg");
+        g.drawImage(nickCage, 0, 0, this);
+        //draws every ball from the ball array 'x' with their respected coordinates
+        for (int t = 0; t < x.size(); t++) {
+            ballClass b = x.get(t);
+            //color changes so rapidly, it creates a strobe light effect. RGB variables in the color class implement the random class.
+            Color randomColor = new Color(r.nextInt(255), r.nextInt(255), r.nextInt(255));
+            g.setColor(randomColor);
+            g.fillOval(b.xDir, b.yDir, b.radius, b.radius);
+        }
+    }
+
+    public class ballClass {
+
+        //each ball has its own speed. However, if the global speed varibale changes, the proceeding ball added will have a diferent speed.
+        int xspeed = globalXSpeed;
+        int yspeed = globalYSpeed;
+        //initializing the x-coordinate, y-coordinate, and radius variables of the ball
+        int xDir;
+        int yDir;
+        int radius;
+
+        /**
+         * Constructor
+         * @param xCoordinate x-coordinate of the ball
+         * @param yCoordinate y-coordinate of the ball
+         * @param ballRadius radius of the ball
+         */
+        public ballClass(int xCoordinate, int yCoordinate, int ballRadius) {
+            xDir = xCoordinate;
+            yDir = yCoordinate;
+            radius = ballRadius;
+        }
+    }
+
+    /**
+     * Adds a new ball class to the ball array with randomized coordinates and radius and adds it to the panel
+     */
+    public void addBall() {
+        x.add(new ballClass(r.nextInt(getWidth() - 15), r.nextInt(getHeight() - 15), r.nextInt(15) + 5));
+        repaint();
+    }
+
+    /**
+     * Moves a certain ball across the screen; bouncing off the wall of the
+     * screen if need be
+     *
+     * @param b specific ball class that will be moved across the screen
+     */
+    public void moveBall(ballClass b) {
+        //get dimensions of the panel
+        int JPanelWidth = getWidth();
+        int JPanelHeight = getHeight();
+        //Every ball will start it's path by going in a North-East; after that, it's random!
+        b.xDir = b.xDir + b.xspeed;
+        b.yDir = b.yDir - b.yspeed;
+        //if the the x-coordinate of a ball hits the right wall, it's trajectory will be adjusted to go to the left wall
+        if (b.xDir >= (JPanelWidth - b.radius)) {
+            b.xspeed = -b.xspeed;
+        }
+        //if the the x-coordinate of a ball hits the left wall, it's trajectory will be adjusted to go to the right wall
+        if (b.xDir <= 0) {
+            b.xspeed = -b.xspeed;
+        }
+        //if the the y-coordinate of a ball hits the top wall, it's trajectory will be adjusted to go to the bottom wall
+        if (b.yDir <= 0) {
+            b.yspeed = -b.yspeed;
+        }
+        //if the the y-coordinate of a ball hits the bottom wall, it's trajectory will be adjusted to go to the top wall
+        if (b.yDir >= (JPanelHeight - b.radius)) {
+            b.yspeed = -b.yspeed;
+        }
+        
+    }
+
+    /**
+     *Connected to the moveBall class. Moves every individual ball in the ball array so that every ball has a different path.
+     */
+    public void moveBall2() {
+        //loops through the ball array
+        for (int t = 0; t < x.size(); t++) {
+            moveBall(x.get(t));
+        }
+    }
+/**
+ * starts the timer
+ */
+    public void animStart() {
+        t1.start();
+    }
+/**
+ * stops the timer
+ */
+    public void animStop() {
+        t1.stop();
+    }
+
+    private class TimerListener implements ActionListener {
+        /**
+         * Every tick from the timer creates an action event; every action event moves the ball and repaints the JPanel
+         * @param e the event created from the timer tick
+         */
+        public void actionPerformed(ActionEvent e) {
+            moveBall2();
+            repaint();
+        }
+    }
+
+    /**
+     * This method is called from within the constructor to initialize the form.
+     * WARNING: Do NOT modify this code. The content of this method is always
+     * regenerated by the Form Editor.
+     */
+    @SuppressWarnings("unchecked")
+    // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
+    private void initComponents() {
+
+        javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
+        this.setLayout(layout);
+        layout.setHorizontalGroup(
+            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 400, Short.MAX_VALUE)
+        );
+        layout.setVerticalGroup(
+            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 300, Short.MAX_VALUE)
+        );
+    }// </editor-fold>//GEN-END:initComponents
+
+
+    // Variables declaration - do not modify//GEN-BEGIN:variables
+    // End of variables declaration//GEN-END:variables
+}
